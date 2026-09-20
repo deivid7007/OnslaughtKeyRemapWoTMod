@@ -80,9 +80,9 @@ Onslaught Key Remap
 
 Found an issue or have a suggestion?
 
-**Email:**  7deividmladenov007@gmail.com
-**Discord:**  dek07420
-**GitHub:** or simply open an issue inside the repository
+- **Email:**  7deividmladenov007@gmail.com
+- **Discord:**  dek07420 (DJ_Dek0)
+- **GitHub:** or simply open an issue inside the repository
 
 
 ## Credits
