@@ -16,6 +16,7 @@ Options:
 import argparse
 import datetime
 import os
+import re
 import sys
 import xml.etree.ElementTree as ET
 import zipfile
@@ -47,6 +48,40 @@ def _arcname(rel_path):
     return 'res/' + '/'.join(parts)
 
 
+_MOD_FILE_RE = re.compile(r'^mod_(.+)\.pyc?$')
+
+
+def _validate_mod_filenames(res_dir, rel_files):
+    mods_suffix = os.path.join('scripts', 'client', 'gui', 'mods')
+    for rel_file in rel_files:
+        rel_dir = os.path.dirname(rel_file)
+        if not rel_dir.replace('/', os.sep).endswith(mods_suffix):
+            continue
+        name = os.path.basename(rel_file)
+        if not name.endswith(('.py', '.pyc')):
+            continue
+
+        if not name.startswith('mod_'):
+            raise ValueError(
+                "%s does not start with 'mod_'. The client's loader "
+                "(_isValidMOD in gui/mods/__init__.py) only picks up files "
+                "named 'mod_*.py'/'mod_*.pyc' under this folder -- anything "
+                "else is silently skipped, no warning, no error, it just "
+                "never loads. Rename it with a 'mod_' prefix." % rel_file
+            )
+
+        match = _MOD_FILE_RE.match(name)
+        if match and '.' in match.group(1):
+            raise ValueError(
+                "%s has a dot in its name besides the extension. The client's "
+                "loader turns 'mod_X.pyc' into the Python module name "
+                "'gui.mods.mod_X' by just stripping '.pyc' -- any interior dot "
+                "becomes an invalid package separator and the mod fails to "
+                "import (ImportError: No module named ...). Rename it without "
+                "the extra dot (e.g. underscore instead)." % rel_file
+            )
+
+
 def build(root_dir, out_path):
     meta_path = os.path.join(root_dir, 'meta.xml')
     res_dir = os.path.join(root_dir, 'res')
@@ -61,6 +96,7 @@ def build(root_dir, out_path):
 
     now = tuple(datetime.datetime.now().timetuple())[:6]
     rel_dirs, rel_files = _iter_res_entries(res_dir)
+    _validate_mod_filenames(res_dir, rel_files)
 
     zf = zipfile.ZipFile(out_path, 'w', zipfile.ZIP_STORED)
     try:

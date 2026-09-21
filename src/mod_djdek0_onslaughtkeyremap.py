@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-djdek0.onslaughtkeyremap.py
+djdek0_onslaughtkeyremap.py
 
 Mod for the game World of Tanks that expose functionality to maintain
 multiple control setups based on if you are in Onslaught mode or not
