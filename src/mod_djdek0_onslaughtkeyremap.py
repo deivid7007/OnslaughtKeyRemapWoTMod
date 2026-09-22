@@ -52,6 +52,8 @@ DESIRED_ONSLAUGHT_KEYS = {
 
 ONSLAUGHT_ENTITY_TYPE_ID = 29
 
+ONSLAUGHT_QUEUE_TYPE_ID = 24
+
 POLL_INTERVAL_SECONDS = 1.0
 
 VERIFY_DELAY_SECONDS = 5.0
@@ -92,7 +94,7 @@ _settings = {
 # --- Pure helpers (no game state touched) --------------------------------
 
 def _is_onslaught(ctrl_type_id, entity_type_id, apply_in_training=False):
-    if entity_type_id == ONSLAUGHT_ENTITY_TYPE_ID:
+    if entity_type_id in (ONSLAUGHT_ENTITY_TYPE_ID, ONSLAUGHT_QUEUE_TYPE_ID):
         return True
     if apply_in_training and PREBATTLE_TYPE is not None and CTRL_ENTITY_TYPE is not None:
         return ctrl_type_id == CTRL_ENTITY_TYPE.LEGACY and entity_type_id == PREBATTLE_TYPE.TRAINING
@@ -588,8 +590,11 @@ def init():
 
     _started = True
     _log.info(
-        '%s loaded -- Onslaught (entityTypeID=%d) now rebinds %s/%s/%s to ammo/ability slots 7/8/9 via CommandMapping (training rooms: %s)',
+        '%s loaded [build: platoon-fix step23] -- Onslaught (LEGACY entityTypeID=%d, '
+        'PREQUEUE entityTypeID=%s) now rebinds %s/%s/%s to ammo/ability slots 7/8/9 via '
+        'CommandMapping (training rooms: %s)',
         MOD_TAG, ONSLAUGHT_ENTITY_TYPE_ID,
+        ONSLAUGHT_QUEUE_TYPE_ID if CTRL_ENTITY_TYPE is not None else 'disabled (CTRL_ENTITY_TYPE import failed)',
         DESIRED_ONSLAUGHT_KEYS['CMD_AMMO_CHOICE_7'],
         DESIRED_ONSLAUGHT_KEYS['CMD_AMMO_CHOICE_8'],
         DESIRED_ONSLAUGHT_KEYS['CMD_AMMO_CHOICE_9'],
